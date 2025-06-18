@@ -62,6 +62,7 @@ exports.login = async (req, res) => {
 
   const { accessToken, refreshToken } = generateTokens(admin);
 
+  // ✅ Set cookies
   res.cookie("refreshToken", refreshToken, {
     ...cookieOptions,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
@@ -72,7 +73,17 @@ exports.login = async (req, res) => {
     maxAge: 15 * 60 * 1000, // 15 minutes
   });
 
-  res.status(200).json({ message: "Login successful", admin });
+  // ✅ Send accessToken in body (for frontend context/login state)
+  res.status(200).json({
+    message: "Login successful",
+    accessToken, // ⬅️ Add this line
+    admin: {
+      id: admin._id,
+      name: admin.name,
+      email: admin.email,
+      role: admin.role,
+    },
+  });
 };
 
 // ⛳ Refresh Token Controller
