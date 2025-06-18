@@ -11,15 +11,18 @@ const adminRoutes = require("./routes/admin");
 
 const app = express();
 
+// ✅ TRUST PROXY REQUIRED FOR COOKIE TO WORK ON RENDER
+app.set("trust proxy", 1); // <<== ADD THIS LINE
+
 // ✅ Middlewares
 app.use(
   cors({
-    origin: ["https://wedlink-frontend.vercel.app"], // ✅ Updated frontend URL
+    origin: "https://wedlink-frontend.vercel.app",
     credentials: true,
   })
 );
 app.use(express.json());
-app.use(cookieParser()); // ✅ Important
+app.use(cookieParser());
 
 // ✅ Routes
 app.use("/api/auth", authRoutes);
