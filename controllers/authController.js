@@ -2,6 +2,7 @@ const Admin = require("../models/Admin");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+// ⛳ Signup Controller
 exports.signup = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -17,13 +18,15 @@ exports.signup = async (req, res) => {
       password: hash,
       role: "",
     });
+
     res.status(201).json({ message: "Signup successful", admin: newAdmin });
   } catch (err) {
-    console.error("Signup error:", err);
+    console.error("❌ Signup error:", err);
     res.status(500).json({ message: "Signup failed" });
   }
 };
 
+// ⛳ Login Controller
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   const admin = await Admin.findOne({ email });
@@ -40,16 +43,19 @@ exports.login = async (req, res) => {
     expiresIn: "7d",
   });
 
+  // ✅ Secure Cookie for cross-origin (Vercel <-> Render)
   res
     .cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false, // set to true in production with HTTPS
+      secure: true, // ✅ MUST be true in production (HTTPS)
+      sameSite: "None", // ✅ MUST be "None" for cross-site cookies
       path: "/api/auth/refresh",
-      sameSite: "Strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     })
     .json({ accessToken, admin });
 };
 
+// ⛳ Refresh Controller
 exports.refresh = (req, res) => {
   const token = req.cookies.refreshToken;
   if (!token) return res.status(401).json({ message: "No token provided" });
@@ -59,13 +65,19 @@ exports.refresh = (req, res) => {
     const accessToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET, {
       expiresIn: "15m",
     });
+
     res.json({ accessToken });
   } catch (err) {
     return res.status(401).json({ message: "Invalid refresh token" });
   }
 };
 
+// ⛳ Logout Controller
 exports.logout = (req, res) => {
-  res.clearCookie("refreshToken", { path: "/api/auth/refresh" });
+  res.clearCookie("refreshToken", {
+    path: "/api/auth/refresh",
+    secure: true,
+    sameSite: "None",
+  });
   res.status(200).json({ message: "Logged out successfully" });
 };
