@@ -42,6 +42,11 @@ app.use("/api/events", eventRoutes);
 app.use("/api/guests", guestRoutes);
 app.use("/api/admin", adminRoutes);
 
+// ✅ Debug catch-all route (put just before MongoDB connect)
+app.use("*", (req, res) => {
+  res.status(404).json({ message: "Route not found", url: req.originalUrl });
+});
+
 // ✅ MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
