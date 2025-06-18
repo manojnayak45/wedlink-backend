@@ -8,9 +8,9 @@ const isProd = process.env.NODE_ENV === "production";
 // ✅ Common Cookie Settings
 const cookieOptions = {
   httpOnly: true,
-  secure: isProd,
-  sameSite: isProd ? "None" : "Lax",
-  path: "/", // Can be "/" if you're not restricting it
+  secure: true, // ✅ always true on Render (uses HTTPS)
+  sameSite: "None", // ✅ MUST be "None" for cross-site cookies
+  path: "/api/auth/refresh", // ✅ Optional but recommended for clarity
 };
 
 // ✅ Token Generator
