@@ -14,12 +14,12 @@ const app = express();
 // ✅ Middlewares
 app.use(
   cors({
-    origin: "http://localhost:5173", // Vite frontend
+    origin: ["https://wedlink-frontend.vercel.app"], // ✅ Updated frontend URL
     credentials: true,
   })
 );
 app.use(express.json());
-app.use(cookieParser()); // ✅ This should come BEFORE routes
+app.use(cookieParser()); // ✅ Important
 
 // ✅ Routes
 app.use("/api/auth", authRoutes);
