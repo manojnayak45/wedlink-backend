@@ -10,7 +10,7 @@ const cookieOptions = {
   httpOnly: true,
   secure: true, // ✅ always true on Render (uses HTTPS)
   sameSite: "None", // ✅ MUST be "None" for cross-site cookies
-  path: "/api/auth/refresh", // ✅ Optional but recommended for clarity
+  path: "/", // ✅ Optional but recommended for clarity
 };
 
 // ✅ Token Generator
