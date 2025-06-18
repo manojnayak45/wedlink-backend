@@ -13,10 +13,10 @@ const {
 
 const auth = require("../middleware/authMiddleware");
 
-// ✅ Keep bulk route BEFORE others to avoid conflict
+// ✅ No path-to-regexp conflict
 router.post("/bulk/:eventId", auth, upload.single("file"), bulkUploadGuests);
-router.post("/:eventId", auth, addGuest);
-router.get("/:eventId", auth, getGuests);
+router.post("/event/:eventId", auth, addGuest);
+router.get("/event/:eventId", auth, getGuests);
 router.put("/:id", auth, updateGuest);
 router.delete("/:id", auth, deleteGuest);
 
