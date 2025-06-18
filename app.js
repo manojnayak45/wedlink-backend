@@ -11,16 +11,28 @@ const adminRoutes = require("./routes/admin");
 
 const app = express();
 
-// ✅ TRUST PROXY REQUIRED FOR COOKIE TO WORK ON RENDER
-app.set("trust proxy", 1); // <<== ADD THIS LINE
+app.set("trust proxy", 1); // for secure cookies on Render
 
-// ✅ Middlewares
+// ✅ Allow only deployed frontend
+const allowedOrigin = "https://wedlink-frontend.vercel.app";
+
 app.use(
   cors({
-    origin: "https://wedlink-frontend.vercel.app",
+    origin: allowedOrigin,
     credentials: true,
   })
 );
+
+// ✅ Handle preflight OPTIONS requests
+app.options(
+  "*",
+  cors({
+    origin: allowedOrigin,
+    credentials: true,
+  })
+);
+
+// ✅ Middlewares
 app.use(express.json());
 app.use(cookieParser());
 
@@ -30,7 +42,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/guests", guestRoutes);
 app.use("/api/admin", adminRoutes);
 
-// ✅ MongoDB Connect & Server Start
+// ✅ MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
