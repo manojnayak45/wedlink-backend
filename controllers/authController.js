@@ -9,7 +9,8 @@ const isProd = process.env.NODE_ENV === "production";
 const cookieOptions = {
   httpOnly: true,
   secure: true, // ✅ always true on Render (uses HTTPS)
-  sameSite: "None", // ✅ MUST be "None" for cross-site cookies
+  sameSite: "None",
+  path: "/",
 };
 
 // ✅ Token Generator
