@@ -102,9 +102,7 @@ exports.refresh = (req, res) => {
     const newAccessToken = jwt.sign(
       { id: decoded.id },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "15m",
-      }
+      { expiresIn: "15m" }
     );
 
     res.cookie("accessToken", newAccessToken, {
@@ -112,7 +110,10 @@ exports.refresh = (req, res) => {
       maxAge: 15 * 60 * 1000,
     });
 
-    res.status(200).json({ message: "Access token refreshed" });
+    res.status(200).json({
+      message: "Access token refreshed",
+      accessToken: newAccessToken, // ✅ important for frontend
+    });
   } catch (err) {
     console.error("❌ Invalid refresh token:", err.message);
     res.clearCookie("accessToken", cookieOptions);
