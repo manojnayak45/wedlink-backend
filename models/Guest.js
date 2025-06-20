@@ -8,6 +8,11 @@ const guestSchema = new mongoose.Schema({
   name: String,
   whatsapp: String,
   email: String,
+  guestId: {
+    type: String,
+    unique: true,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Guest", guestSchema);

@@ -1,11 +1,22 @@
 const Guest = require("../models/Guest");
 const xlsx = require("xlsx");
 
+const generateGuestId = async () => {
+  let id;
+  let exists = true;
+  while (exists) {
+    id = Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit
+    exists = await Guest.exists({ guestId: id });
+  }
+  return id;
+};
+
 exports.addGuest = async (req, res) => {
   try {
     const guest = await Guest.create({
       ...req.body,
       eventId: req.params.eventId,
+      guestId: await generateGuestId(), // ✅ generate 4-digit ID
     });
     res.status(201).json(guest);
   } catch (err) {
@@ -52,12 +63,15 @@ exports.bulkUploadGuests = async (req, res) => {
     const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
     // Map data with eventId
-    const guests = data.map((guest) => ({
-      name: guest.name || guest.Name,
-      whatsapp: guest.whatsapp || guest.Whatsapp,
-      email: guest.email || guest.Email,
-      eventId: req.params.eventId,
-    }));
+    const guests = await Promise.all(
+      data.map(async (guest) => ({
+        name: guest.name || guest.Name,
+        whatsapp: guest.whatsapp || guest.Whatsapp,
+        email: guest.email || guest.Email,
+        eventId: req.params.eventId,
+        guestId: await generateGuestId(),
+      }))
+    );
 
     await Guest.insertMany(guests);
 
@@ -65,5 +79,21 @@ exports.bulkUploadGuests = async (req, res) => {
   } catch (err) {
     console.error("Bulk upload failed:", err);
     res.status(500).json({ message: "Bulk upload failed" });
+  }
+};
+
+exports.getGuestByGuestId = async (req, res) => {
+  try {
+    const guest = await Guest.findOne({ guestId: req.params.guestId }).populate(
+      "eventId"
+    );
+
+    if (!guest) {
+      return res.status(404).json({ message: "Guest not found" });
+    }
+
+    res.status(200).json(guest);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

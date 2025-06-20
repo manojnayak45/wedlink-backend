@@ -9,6 +9,7 @@ const {
   updateGuest,
   deleteGuest,
   bulkUploadGuests,
+  getGuestByGuestId,
 } = require("../controllers/guestController");
 
 const auth = require("../middleware/authMiddleware");
@@ -17,6 +18,7 @@ const auth = require("../middleware/authMiddleware");
 router.post("/bulk/:eventId", auth, upload.single("file"), bulkUploadGuests);
 router.post("/event/:eventId", auth, addGuest);
 router.get("/event/:eventId", auth, getGuests);
+router.get("/public/guest/:guestId", getGuestByGuestId); // ✅ Public route
 router.put("/:id", auth, updateGuest);
 router.delete("/:id", auth, deleteGuest);
 

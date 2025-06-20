@@ -10,22 +10,27 @@ const {
 } = require("../controllers/eventController");
 
 const auth = require("../middleware/authMiddleware");
+const Event = require("../models/Event");
 
-// ✅ Routes
+// 🆕 Public route for invitation frontend
+router.get("/public/:id", async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id).select(
+      "name groomName brideName location date description"
+    );
+    if (!event) return res.status(404).json({ message: "Event not found" });
+    res.status(200).json(event);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching public event" });
+  }
+});
+
+// ✅ Protected routes (no change)
 router.post("/", auth, createEvent);
 router.get("/", auth, getEvents);
-router.get("/check-name/:name", auth, checkEventName); // ⬅️ using controller
-
+router.get("/check-name/:name", auth, checkEventName);
 router.get("/:id", auth, getEvent);
 router.delete("/:id", auth, deleteEvent);
-router.put(
-  "/:id",
-  auth,
-  (req, res, next) => {
-    console.log("✅ PUT /api/events/:id hit");
-    next();
-  },
-  updateEvent
-);
+router.put("/:id", auth, updateEvent);
 
 module.exports = router;
