@@ -3,10 +3,16 @@ const Event = require("../models/Event");
 // ✅ Define ALL functions using const
 const createEvent = async (req, res) => {
   try {
+    const existingEvent = await Event.findOne({
+      name: { $regex: `^${req.body.name}$`, $options: "i" },
+    });
+    if (existingEvent) {
+      return res.status(409).json({ message: "Event name already exists" });
+    }
+
     const event = await Event.create({ ...req.body, adminId: req.admin._id });
     res.status(201).json(event);
   } catch (error) {
-    console.error("❌ Error creating event:", error.message);
     res
       .status(500)
       .json({ message: "Failed to create event", error: error.message });
@@ -82,6 +88,17 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+const checkEventName = async (req, res) => {
+  try {
+    const exists = await Event.exists({
+      name: { $regex: `^${req.params.name}$`, $options: "i" },
+    });
+    res.json({ exists: !!exists });
+  } catch (err) {
+    res.status(500).json({ message: "Error checking event name" });
+  }
+};
+
 // ✅ Export all functions properly
 module.exports = {
   createEvent,
@@ -89,4 +106,5 @@ module.exports = {
   getEvent,
   updateEvent,
   deleteEvent,
+  checkEventName,
 };
