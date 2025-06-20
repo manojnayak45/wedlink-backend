@@ -14,7 +14,7 @@ const app = express();
 app.set("trust proxy", 1); // for secure cookies on Render
 
 // ✅ Allow only deployed frontend
-const allowedOrigin = "http://localhost:5173";
+const allowedOrigin = "https://wedlink-frontend.vercel.app";
 
 app.use(
   cors({
