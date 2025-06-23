@@ -16,7 +16,7 @@ const Event = require("../models/Event");
 router.get("/public/:id", async (req, res) => {
   try {
     const event = await Event.findById(req.params.id).select(
-      "name groomName brideName location date description"
+      "name groomName brideName location date description template"
     );
     if (!event) return res.status(404).json({ message: "Event not found" });
     res.status(200).json(event);
@@ -25,7 +25,7 @@ router.get("/public/:id", async (req, res) => {
   }
 });
 
-// ✅ Protected routes (no change)
+// ✅ Protected routes
 router.post("/", auth, createEvent);
 router.get("/", auth, getEvents);
 router.get("/check-name/:name", auth, checkEventName);
